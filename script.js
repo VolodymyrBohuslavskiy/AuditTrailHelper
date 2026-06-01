@@ -1,3 +1,5 @@
+const promptText ='I have the following list of unique actions from a Salesforce Setup Audit Trail log. Please analyze them and provide a structured list of Salesforce components that were changed, grouped by component type (e.g. Profiles, Flows, Custom Objects, etc.). Without any explanation we need this information to know what needs to be added to the pull request:'
+
 let csvFileResponseOriginal;
 let csvFileResponseResult;
 
@@ -6,6 +8,7 @@ let selectedUser;
 let sections = new Set();
 let selectedSection;
 let groupByDay = false;
+let lastCheckedCheckbox = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const csvFile = document.getElementById('csvFile');
@@ -17,6 +20,51 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.onload = (e) => csvFileResponseOriginal = parseCSV(e.target.result);
     reader.readAsText(file);
     reader.onloadend = () => populateValues();
+  });
+
+  document.getElementById('tableBody').addEventListener('click', (event) => {
+    const checkbox = event.target;
+    if (checkbox.type !== 'checkbox') return;
+
+    if (event.shiftKey && lastCheckedCheckbox) {
+      const checkboxes = [...document.querySelectorAll('#tableBody input[type="checkbox"]')];
+      const currentIndex = checkboxes.indexOf(checkbox);
+      const lastIndex = checkboxes.indexOf(lastCheckedCheckbox);
+
+      if (currentIndex !== -1 && lastIndex !== -1) {
+        const [start, end] = [Math.min(currentIndex, lastIndex), Math.max(currentIndex, lastIndex)];
+        checkboxes.slice(start, end + 1).forEach(cb => { cb.checked = checkbox.checked; });
+      }
+    }
+
+    lastCheckedCheckbox = checkbox;
+
+    const anyChecked = document.querySelectorAll('#tableBody input[type="checkbox"]:checked').length > 0;
+    document.getElementById('buildPromptBtn').disabled = !anyChecked;
+  });
+
+  document.getElementById('buildPromptBtn').addEventListener('click', () => {
+    if (!csvFileResponseOriginal) return;
+
+    const checkedIds = new Set(
+      [...document.querySelectorAll('#tableBody input[type="checkbox"]:checked')]
+        .map(cb => parseInt(cb.id.replace('check', '')))
+    );
+
+    if (checkedIds.size === 0) return;
+
+    const selectedLogs = csvFileResponseOriginal.filter(log => checkedIds.has(log.Id));
+    const uniqueActions = [...new Set(selectedLogs.map(log => log.Action).filter(Boolean))];
+
+    const prompt = `${promptText}\n\n${uniqueActions.map((a, i) => `${i + 1}. ${a}`).join('\n')}`;
+
+    navigator.clipboard.writeText(prompt);
+  });
+
+  document.getElementById('selectAll').addEventListener('change', (event) => {
+    document.querySelectorAll('#tableBody input[type="checkbox"]')
+      .forEach(cb => { cb.checked = event.target.checked; });
+    document.getElementById('buildPromptBtn').disabled = !event.target.checked;
   });
 
   document.getElementById('daySeparatorToggle').addEventListener('change', (event) => {
@@ -71,6 +119,9 @@ function applyFilters() {
 function renderTableBody(listOfLogs) {
   listOfLogs = listOfLogs || csvFileResponseOriginal;
 
+  lastCheckedCheckbox = null;
+  document.getElementById('selectAll').checked = false;
+  document.getElementById('buildPromptBtn').disabled = true;
   let tableBody = '';
   let currentDay = null;
 

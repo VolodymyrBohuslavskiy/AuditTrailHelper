@@ -21,7 +21,7 @@
             <div class="d-flex align-items-center gap-3">
                 <input type="file" id="csvFile" accept=".csv">
 
-                <div id="filtersSection" class="d-none align-items-center gap-3">
+                <div id="filtersSection" class="d-none align-items-center gap-3 w-100">
                     <label class="mb-0" for="user-select">
                         User:
                         <select name="user" id="user-select" class="ms-1">
@@ -40,6 +40,10 @@
                         <input class="form-check-input" type="checkbox" id="daySeparatorToggle">
                         <label class="form-check-label" for="daySeparatorToggle">Group by day</label>
                     </div>
+
+                    <button id="buildPromptBtn" class="btn btn-sm btn-outline-secondary ms-auto" title="Copy AI prompt with unique actions" disabled>
+                        <i class="bi bi-clipboard2"></i><sup>i</sup>
+                    </button>
                 </div>
             </div>
         </div>
@@ -48,7 +52,7 @@
             <table class="table table-bordered mx-3 mt-3">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th><input class="form-check-input" type="checkbox" id="selectAll"></th>
                         <th>#</th>
                         <th>Date</th>
                         <th>User</th>
