@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const file = csvFile.files[0];
     const reader = new FileReader();
 
+    document.getElementById('loadingOverlay').classList.remove('d-none');
+
     reader.onload = (e) => csvFileResponseOriginal = parseCSV(e.target.result);
     reader.readAsText(file);
     reader.onloadend = () => populateValues();
@@ -104,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showResults();
     publishContent();
+    document.getElementById('loadingOverlay').classList.add('d-none');
   }
 });
 
