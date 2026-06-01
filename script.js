@@ -19,6 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.onloadend = () => populateValues();
   });
 
+  document.getElementById('daySeparatorToggle').addEventListener('change', (event) => {
+    groupByDay = event.target.checked;
+    applyFilters();
+  });
+
+  document.getElementById('user-select').addEventListener('change', (event) => {
+    selectedUser = event.target.value;
+    applyFilters();
+  });
+
+  document.getElementById('section-select').addEventListener('change', (event) => {
+    selectedSection = event.target.value;
+    applyFilters();
+  });
+
   function showResults() {
     const filters = document.getElementById('filtersSection');
     filters.classList.remove('d-none');
@@ -42,21 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showResults();
     publishContent();
   }
-});
-
-document.getElementById('daySeparatorToggle').addEventListener('change', (event) => {
-  groupByDay = event.target.checked;
-  applyFilters();
-});
-
-document.getElementById('user-select').addEventListener('change', (event) => {
-  selectedUser = event.target.value;
-  applyFilters();
-});
-
-document.getElementById('section-select').addEventListener('change', (event) => {
-  selectedSection = event.target.value;
-  applyFilters();
 });
 
 function applyFilters() {
