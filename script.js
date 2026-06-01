@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function populateValues() {
     csvFileResponseOriginal.forEach((log, index) => {
       log.Id = ++index;
-      log.DateFormated = moment(log.Date).format('DD.MM.YYYY [at] HH:mm');
+      log.DateFormated = moment(log.Date).format('DD.MM.YYYY [ ] HH:mm');
       log.DateValue = moment(log.Date).format('DD.MM.YYYY');
 
       if (log?.User.includes('@')) {
