@@ -1,0 +1,11 @@
+.sf-icon {
+    color: #00A1E0;
+}
+
+.day-separator {
+    background-color: #1a1d20 !important;
+}
+
+#resultsSection table {
+    width: calc(100% - 2rem);
+}
